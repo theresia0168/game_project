@@ -15,15 +15,23 @@ public:
 	int date_range_set();
 };
 
-class UpDown {
+class Player {
+
+};
+
+class Market {
 public:
+	double base_rate = 0.0325;
 	int up = 0;
 	int s_up = 0;
 	int s_down = 0;
 	int down = 0;
 	int bb_rate = 0;
 	int cooltime = 0;
-	int UpAndDown(UpDown *c);
+	int UpAndDown(Market *c);
+	void Market_Indicator();
 };
+
+void event(Market *mk);
 
 #endif

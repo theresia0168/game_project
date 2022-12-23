@@ -27,23 +27,23 @@ int Date::date_range_set() {
 	}
 }
 
-int UpDown::UpAndDown(UpDown* c) {
+int Market::UpAndDown(Market* c) {
 	int pm = rand() % 10000;
-	if (pm < 750) {
+	if (pm < 1000) {
 		down = 0;
 		s_down = 0;
 	}
-	else if (pm < 1250) {
+	else if (pm < 1500) {
 		s_down = 0;
 	}
-	else if (pm > 4000 && pm < 5000) {
+	else if (pm > 4000 && pm < 6000) {
 		s_down = 0;
 		s_up = 0;
 	}
 	else if (pm > 8500) {
 		up = 0;
 		s_up = 0;
-		if (up > 10)
+		if (up > 5)
 			cooltime = 100;
 	}
 	else if (pm > 8000) {
@@ -77,4 +77,27 @@ int UpDown::UpAndDown(UpDown* c) {
 		cooltime--;
 	c->bb_rate = bb_rate;
 	return c->bb_rate;
+}
+
+void Market::Market_Indicator() {
+	printf("기준 금리 : %.2lf%%\n", base_rate * 100);
+	printf("\n");
+}
+
+void event(Market* mk) {
+	int parameter = 0;
+	parameter = rand() % 10000;
+
+	if (mk->up > 5 && (parameter > 1000 && parameter < 1300)) {
+		printf("기준 금리 0.25%% 인상 %.2lf%% -> %.2lf%%\n", mk->base_rate * 100, mk->base_rate * 100 + 0.25);
+		mk->up = 0;
+		mk->base_rate += 0.0025;
+		mk->cooltime = 60;
+	}
+
+	if (mk->down > 5 && (parameter > 8000 && parameter < 8300)) {
+		printf("기준 금리 0.25%% 인하 %.2lf%% -> %.2lf%%\n", mk->base_rate * 100, mk->base_rate * 100 - 0.25);
+		mk->down = 0;
+		mk->base_rate -= 0.0025;
+	}
 }

@@ -1,9 +1,10 @@
 ﻿#include<stdio.h>
 #include "coin.h"
 #include "system.h"
-#include "player.h"
+#include "bank.h"
 
-void month(Coin* c1, Coin* c2, Date* d1, UpDown* ud, Account *ac);
+void month(Coin* c1, Coin* c2, Date* d1, Market* ud, Account *ac);
+void credit(Account* ac);
 
 int main(int argc, char* argv[]) {
 	srand((unsigned int)time(NULL));
@@ -21,26 +22,40 @@ int main(int argc, char* argv[]) {
 	btc.price = baserand1 + (baserand2 + 1) * 1000;
 
 	Date date;
-	UpDown UD;
+	Market UD;
 	Account player;
-
+	
 	while (1) {
 		int command = 0;
-		printf("[1] : 시간 진행\n");
-		printf("[2] : 매수/매도\n");
-		printf("[3] : 자산 확인\n");
-		printf("[4] : 종료\n$ ");
+		printf("[1] 시간 진행\n");
+		printf("[2] 매수/매도\n");
+		printf("[3] 자산 확인\n");
+		printf("[4] 대출 / 상환\n");
+		printf("[5] 시장 지표 확인\n");
+		printf("[6] 종료\n$ ");
 		scanf_s("%d", &command);
 		printf("\n");
 		if (command == 1)
 			month(&xrp, &btc, &date, &UD, &player);
-		else if (command == 4)
+		else if (command == 3)
+			credit(&player);
+		else if (command == 4) {
+			printf("[1] 대출\n");
+			printf("[2] 상환\n$ ");
+			scanf_s("%d", &command);
+			printf("\n");
+			if (command == 1)
+				player.loan(&player);
+		}
+		else if (command == 5)
+			UD.Market_Indicator();
+		else if (command == 6)
 			break;
 	}
 	return 0;
 }
 
-void month(Coin* c1, Coin* c2, Date* d1, UpDown* ud, Account *ac) {
+void month(Coin* c1, Coin* c2, Date* d1, Market* ud, Account *ac) {
 	printf("%d - %d\n", d1->year, d1->month);
 	d1->date_range = d1->date_range_set();
 	c1->month_setting();
@@ -52,12 +67,10 @@ void month(Coin* c1, Coin* c2, Date* d1, UpDown* ud, Account *ac) {
 		c1->day();
 		c2->day();
 		d1->date++;
+		event(ud);
 	}
-	ac->income(d1);
-	printf("잔고 : \\%d\n", ac->credit);
-	printf("지출 : \\%d\n", ac->outcome);
-	printf("\n");
-
+	ac->income(d1, ud);
+	
 	printf("XRP\n");
 	c1->month_cleanup();
 	printf("\n");
@@ -65,5 +78,12 @@ void month(Coin* c1, Coin* c2, Date* d1, UpDown* ud, Account *ac) {
 	printf("BTC\n");
 	c2->month_cleanup();
 	d1->time_spend(d1);
+	printf("\n");
+}
+
+void credit(Account *ac) {
+	printf("잔고 : \\%d\n", ac->credit);
+	printf("지출 : \\%d\n", ac->outcome);
+	printf("잔여 대출금 : \\%d\n", ac->debt);
 	printf("\n");
 }
